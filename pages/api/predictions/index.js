@@ -33,15 +33,23 @@ export default async function handler(req) {
     auth: process.env.REPLICATE_API_TOKEN,
   });
 
-  const prediction = await replicate.deployments.predictions.create(
-    "replicate",
-    "scribble-diffusion-jagilley-controlnet",
-    {
-      input,
-      webhook: `${WEBHOOK_HOST}/api/replicate-webhook`,
-      webhook_events_filter: ["start", "completed"],
-    }
-  );
+  // const prediction = await replicate.deployments.predictions.create(
+  //   "replicate",
+  //   "scribble-diffusion-jagilley-controlnet",
+  //   {
+  //     input,
+  //     webhook: `${WEBHOOK_HOST}/api/replicate-webhook`,
+  //     webhook_events_filter: ["start", "completed"],
+  //   }
+  // );
+
+  const prediction = await replicate.predictions.create({
+    version: "795433b19458d0f4fa172a7ccf93178d2adb1cb8ab2ad6c8fdc33fdbcd49f477",
+    input,
+    webhook: `${WEBHOOK_HOST}/api/replicate-webhook`,
+    webhook_events_filter: ["start", "completed"]
+  });
+  
 
   if (prediction?.error) {
     return NextResponse.json({ detail: prediction.error }, { status: 500 });
